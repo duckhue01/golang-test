@@ -1,60 +1,60 @@
 package services
 
-// import (
-// 	"context"
-// 	"reflect"
-// 	"testing"
+import (
+	"context"
+	"reflect"
+	"testing"
 
-// 	proto "github.com/duckhue01/golang_test/proto/v1"
-// )
+	proto "github.com/duckhue01/golang_test/proto/v1"
+)
 
 
 
-// type todosStore struct {
-// 	todos []proto.AddRequest
-// }
+type todosStore struct {
+	todos []proto.AddRequest
+}
 
-// func (s *todosStore) Add(req *proto.AddRequest) bool {
+func (s *todosStore) Add(req *proto.AddRequest) bool {
 	
-// 	for i := range s.todos {
-// 		if i == int(req.Todo.Id) {
-// 			return false
-// 		}
-// 	}
+	for i := range s.todos {
+		if i == int(req.Todo.Id) {
+			return false
+		}
+	}
 
-// 	s.todos = append(s.todos, proto.AddRequest{})
-// 	return true
-// }
+	s.todos = append(s.todos, proto.AddRequest{})
+	return true
+}
 
-// var s = NewTodosService(&todosStore{})
+var s = NewTodosService(&todosStore{})
 
-// func TestTodosService_Add(t *testing.T) {
-// 	type args struct {
-// 		ctx context.Context
-// 		req *proto.AddRequest
-// 	}
-// 	tests := []struct {
-// 		name    string
-// 		s       *TodosService
-// 		args    args
-// 		want    *proto.AddResponse
-// 		wantErr bool
-// 	}{
-// 		// TODO: Add test cases.
-// 	}
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			got, err := s.Add(tt.args.ctx, tt.args.req)
-// 			if (err != nil) != tt.wantErr {
-// 				t.Errorf("TodosService.Add() error = %v, wantErr %v", err, tt.wantErr)
-// 				return
-// 			}
-// 			if !reflect.DeepEqual(got, tt.want) {
-// 				t.Errorf("TodosService.Add() = %v, want %v", got, tt.want)
-// 			}
-// 		})
-// 	}
-// }
+func TestTodosService_Add(t *testing.T) {
+	type args struct {
+		ctx context.Context
+		req *proto.AddRequest
+	}
+	tests := []struct {
+		name    string
+		s       *TodosService
+		args    args
+		want    *proto.AddResponse
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := s.Add(tt.args.ctx, tt.args.req)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("TodosService.Add() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("TodosService.Add() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
 
 // // func TestTodosService_GetOne(t *testing.T) {
 // // 	type args struct {

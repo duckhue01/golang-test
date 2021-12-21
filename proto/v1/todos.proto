@@ -18,6 +18,7 @@ message Todo {
 message AddResponse { 
   string api = 1;
   bool isOk = 2;
+  string mes= 3;
 }
 message AddRequest {
   string api = 1;
@@ -32,8 +33,9 @@ message GetAllRequest {
 }
 message GetAllResponse {
   string api = 1;
-
   repeated Todo todo = 2;
+  bool isOk = 3;
+  string mes= 4;
 }
 
 
@@ -45,6 +47,8 @@ message GetOneRequest {
 message GetOneResponse {
   string api = 1;
   Todo todo = 2;
+  bool isOk = 3;
+  string mes= 4;
 }
 
 // update request response pair
@@ -55,6 +59,7 @@ message UpdateRequest {
 message UpdateResponse {
   string api = 1;
   bool isOk = 2;
+  string mes= 3;
 }
 
 
@@ -66,6 +71,7 @@ message DeleteRequest {
 message DeleteResponse {
   string api = 1;
   bool isOk = 2;
+  string mes= 3;
 }
 
 
