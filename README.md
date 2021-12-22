@@ -2,29 +2,26 @@
 
 ### Local Development Guideline:
   **Prerequisites**
-    1 Docker & Docker Compose
-    2 Git
+  1. Docker & Docker Compose
+  2. Git
   **Setup Instructions**
-    1. Clone the project to local machine and go to the folder
-      ```zsh
-      git clone https://github.com/duckhue01/golang_test.git
-      cd ./golang_test
-      ```
-    2. Use docker compose to build images and run containers
-      ```zsh
-      docker-compose up --build
-      ```
+  1. Clone the project to local machine and go to the folder<br>
+    ```zsh
+    git clone https://github.com/duckhue01/golang_test.git
+    cd ./golang_test
+    ```
+  2. Use docker compose to build images and run containers<br>
+    ```zsh
+    docker-compose up --build
+    ```
 ### REST API Documentation:
   **Create Todo**
   ----
   Create a new todo item.
-  * **URL**
-  /v1/todos
-  
-  * **Method:**
-    `POST`
+  * **URL** `/v1/todos`
+  * **Method:** `POST`
+    
   * **Success Response:**
-
     * **Code:** 200 OK <br />
       ```json
       {
@@ -54,11 +51,9 @@
   **Get All**
   ----
   Get all todos are stored in database
-  * **URL**
-  /v1/todos
-  
-  * **Method:**
-    `GET`
+  * **URL** ` /v1/todos`
+  * **Method:** `GET`
+    
   * **Success Response:**
 
     * **Code:** 200 OK <br />  
@@ -90,17 +85,16 @@
 
     ```json
     GET http://127.0.0.1:8080/v1/todos HTTP/1.1
-    Content-Type: application/json
     ```
     
   **Get One**
   ----
   get one todos with id
-  * **URL**
-  /v1/todos/:id
+  * **URL** `/v1/todos/:id` 
+ 
   
-  * **Method:**
-    `GET`
+  * **Method:** `GET`
+    
   * **Success Response:**
 
     * **Code:** 200 OK <br />  
@@ -133,18 +127,17 @@
 
     ```json
     GET http://127.0.0.1:8080/v1/todos/12 HTTP/1.1
-    Content-Type: application/json
     ```
 
 
   **Update Todo**
   ----
   update existing todo
-  * **URL**
-  /v1/todos/
+  * **URL** `/v1/todos/`
   
-  * **Method:**
-    `PUT`
+  
+  * **Method:** `PUT`
+    
   * **Success Response:**
 
     * **Code:** 200 OK <br />  
@@ -186,11 +179,11 @@
   **Delete Todo**
   ----
   delete existing todo
-  * **URL**
-  /v1/todos/:id
+  * **URL** `/v1/todos/:id`
   
-  * **Method:**
-    `DELETE`
+  
+  * **Method:** `DELETE`
+    
   * **Success Response:**
 
     * **Code:** 200 OK <br />  
