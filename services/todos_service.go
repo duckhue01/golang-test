@@ -2,7 +2,6 @@ package services
 
 import (
 	"context"
-	"fmt"
 
 	proto "github.com/duckhue01/golang_test/proto/v1"
 	"google.golang.org/grpc/codes"
@@ -23,6 +22,8 @@ type TodosService struct {
 
 const apiVer = "v1"
 
+
+
 func NewTodosService(store TodosStore) *TodosService {
 	return &TodosService{Store: store}
 }
@@ -41,9 +42,7 @@ func (s *TodosService) checkAPI(api string) error {
 
 func (s *TodosService) Add(ctx context.Context, req *proto.AddRequest) (*proto.AddResponse, error) {
 
-	fmt.Println(req)
 
-	// check if the API version requested by client is supported by server
 	if err := s.checkAPI(req.Api); err != nil {
 		return &proto.AddResponse{
 			Api:  apiVer,
@@ -55,7 +54,6 @@ func (s *TodosService) Add(ctx context.Context, req *proto.AddRequest) (*proto.A
 	if err != nil {
 		return &proto.AddResponse{
 			Api:  apiVer,
-
 		}, err
 
 	}
@@ -88,7 +86,6 @@ func (s *TodosService) GetOne(ctx context.Context, req *proto.GetOneRequest) (*p
 }
 
 func (s *TodosService) GetAll(ctx context.Context, req *proto.GetAllRequest) (*proto.GetAllResponse, error) {
-	fmt.Println(req)
 	if err := s.checkAPI(req.Api); err != nil {
 		return &proto.GetAllResponse{
 			Api:  apiVer,
@@ -153,7 +150,7 @@ func (s *TodosService) Delete(ctx context.Context, req *proto.DeleteRequest) (*p
 	}, nil
 }
 
-// i have no idea why this doesn't work
-// func (s *TodosService) MustEmbedUnimplementedTodosServiceTodosService() {
-
+// i have no idea why this doesn't work 
+// so i decide to comment this method at proto/v1/todos_grpc.pb.go
+// func (s *TodosService) mustEmbedUnimplementedTodosServiceTodosService() {
 // }

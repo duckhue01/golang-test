@@ -32,7 +32,6 @@ func NewDatabaseStore() *DatabaseStore {
 		AllowNativePasswords: true,
 		ParseTime:            true,
 	}
-	fmt.Println(cfg.FormatDSN())
 	db, err := sql.Open("mysql", cfg.FormatDSN())
 	if err != nil {
 		log.Fatal(err)
@@ -56,7 +55,6 @@ func (d *DatabaseStore) connect(ctx context.Context) (*sql.Conn, error) {
 }
 
 func (d *DatabaseStore) Add(ctx context.Context, req *proto.AddRequest) error {
-	// get SQL connection from pool
 	c, err := d.connect(ctx)
 	if err != nil {
 		return err
@@ -73,7 +71,6 @@ func (d *DatabaseStore) Add(ctx context.Context, req *proto.AddRequest) error {
 		return err
 	}
 
-	// insert Todo entity data
 	_, err = c.ExecContext(ctx, "INSERT INTO Todo(`Title`, `Description`, `createAt`, `UpdateAt`, `IsDone`) VALUES(?, ?, ?, ?, ?)",
 		req.Todo.GetTitle(), req.Todo.Description, createAt, updateAt, req.Todo.IsDone)
 	if err != nil {
@@ -84,14 +81,12 @@ func (d *DatabaseStore) Add(ctx context.Context, req *proto.AddRequest) error {
 }
 func (d *DatabaseStore) GetOne(ctx context.Context, id int32) (*proto.Todo, error) {
 
-	// get SQL connection from pool
 	c, err := d.connect(ctx)
 	if err != nil {
 		return nil, err
 	}
 	defer c.Close()
 
-	// query Todo by ID
 	rows, err := c.QueryContext(ctx, "SELECT * FROM Todo WHERE `ID`=?", id)
 	if err != nil {
 		return nil, status.Error(codes.Unknown, "failed to select from Todo-> "+err.Error())
@@ -111,7 +106,6 @@ func (d *DatabaseStore) GetOne(ctx context.Context, id int32) (*proto.Todo, erro
 	if err := rows.Scan(&td.Id, &td.Title, &td.Description, &createAt, &updateAt, &td.IsDone); err != nil {
 		return nil, status.Error(codes.Unknown, "failed to retrieve field values from Todo row-> "+err.Error())
 	}
-	// fmt.Println(td)
 	td.CreateAt = timestamppb.New(createAt)
 
 	td.UpdateAt = timestamppb.New(updateAt)
@@ -125,14 +119,13 @@ func (d *DatabaseStore) GetOne(ctx context.Context, id int32) (*proto.Todo, erro
 
 func (d *DatabaseStore) GetAll(ctx context.Context) ([]*proto.Todo, error) {
 
-	// get SQL connection from pool
 	c, err := d.connect(ctx)
 	if err != nil {
 		return nil, err
 	}
 	defer c.Close()
 
-	// get Todo list
+
 	rows, err := c.QueryContext(ctx, "SELECT * FROM Todo")
 	if err != nil {
 		return nil, status.Error(codes.Unknown, "failed to select from Todo-> "+err.Error())
@@ -160,7 +153,6 @@ func (d *DatabaseStore) GetAll(ctx context.Context) ([]*proto.Todo, error) {
 }
 
 func (d *DatabaseStore) Update(ctx context.Context, req *proto.UpdateRequest) error {
-	// get SQL connection from pool
 	c, err := d.connect(ctx)
 	if err != nil {
 		return err
@@ -172,7 +164,6 @@ func (d *DatabaseStore) Update(ctx context.Context, req *proto.UpdateRequest) er
 		return status.Error(codes.InvalidArgument, "updateAt field has invalid format-> "+err.Error())
 	}
 
-	// update Todo
 	res, err := c.ExecContext(ctx, "UPDATE Todo SET `Title`=?, `Description`=?, `UpdateAt`=?, `IsDone`=? WHERE `ID`=?",
 		req.Todo.Title, req.Todo.Description, updateAt, req.Todo.IsDone, req.Todo.Id)
 	if err != nil {
@@ -194,14 +185,12 @@ func (d *DatabaseStore) Update(ctx context.Context, req *proto.UpdateRequest) er
 
 func (d *DatabaseStore) Delete(ctx context.Context, id int32) error {
 
-	// get SQL connection from pool
 	c, err := d.connect(ctx)
 	if err != nil {
 		return err
 	}
 	defer c.Close()
 
-	// delete Todo
 	res, err := c.ExecContext(ctx, "DELETE FROM Todo WHERE `ID`=?", id)
 	if err != nil {
 		return status.Error(codes.Unknown, "failed to delete Todo-> "+err.Error())

@@ -11,8 +11,6 @@ import (
 )
 
 var (
-	// command-line options:
-	// gRPC server endpoint
 	grpcServerEndpoint = flag.String("grpc-server-endpoint", "grpc:4040", "gRPC server endpoint")
 )
 
@@ -21,8 +19,7 @@ func runGateWay() error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	// Register gRPC server endpoint
-	// Note: Make sure the gRPC server is running properly and accessible
+	// Register grpc server endpoint
 	mux := runtime.NewServeMux()
 	opts := []grpc.DialOption{grpc.WithInsecure()}
 	err := gw.RegisterTodosServiceHandlerFromEndpoint(ctx, mux, *grpcServerEndpoint, opts)
