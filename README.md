@@ -4,6 +4,8 @@
   **Prerequisites**
   1. Docker & Docker Compose
   2. Git
+
+  
   **Setup Instructions**
   1. Clone the project to local machine and go to the folder<br>
     ```zsh
