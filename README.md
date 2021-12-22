@@ -11,12 +11,15 @@
 
   **Setup Instructions**
   1. Clone the project to local machine and go to the folder<br>
-    ```zsh
+    ```
     git clone https://github.com/duckhue01/golang_test.git
-    cd ./golang_test
+    ```
+    <br>
+    ```
+      cd ./golang_test
     ```
   2. Use docker compose to build images and run containers<br>
-    ```zsh
+    ```
     docker-compose up --build
     ```
 
