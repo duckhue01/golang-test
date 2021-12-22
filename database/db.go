@@ -37,6 +37,7 @@ func NewDatabaseStore() *DatabaseStore {
 		log.Fatal(err)
 	}
 
+	// test if connect successfully
 	if err := db.Ping(); err != nil {
 		log.Fatal(err, "ping")
 	}
@@ -61,11 +62,11 @@ func (d *DatabaseStore) Add(ctx context.Context, req *proto.AddRequest) error {
 	}
 	defer c.Close()
 
+	// convert to time.Time
 	createAt, err := ptypes.Timestamp(req.Todo.CreateAt)
 	if err != nil {
 		return err
 	}
-
 	updateAt, err := ptypes.Timestamp(req.Todo.UpdateAt)
 	if err != nil {
 		return err
