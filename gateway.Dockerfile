@@ -1,25 +1,27 @@
-FROM golang:1.16-alpine
+FROM golang:1.16-buster AS build
 WORKDIR /app
 
-# add some necessary packages
-RUN apk update && \
-    apk add libc-dev && \
-    apk add gcc && \
-    apk add make
 
-# prevent the re-installation of vendors at every change in the source code
 COPY go.mod ./
 COPY go.sum ./
 RUN go mod download && go mod verify
-
-RUN go get github.com/githubnemo/CompileDaemon
-
-# Copy and build the app
 COPY . .
-COPY ./gateway.sh /entrypoint.sh
+RUN go build -o /gateway ./gateway/gateway.go
 
-# wait-for-it requires bash, which alpine doesn't ship with by default. Use wait-for instead
-# ADD https://raw.githubusercontent.com/eficode/wait-for/v2.1.0/wait-for /usr/local/bin/wait-for
-RUN chmod +rx /entrypoint.sh
 
-ENTRYPOINT [ "sh", "/entrypoint.sh" ]
+
+
+##
+## Deploy
+##
+FROM gcr.io/distroless/base-debian10
+
+WORKDIR /
+
+
+COPY --from=build /gateway /gateway
+USER nonroot:nonroot
+ENTRYPOINT ["/gateway"]
+
+
+

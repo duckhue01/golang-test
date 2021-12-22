@@ -100,12 +100,13 @@ func (s *TodosService) GetAll(ctx context.Context, req *proto.GetAllRequest) (*p
 	if err != nil {
 		return &proto.GetAllResponse{
 			Api:  apiVer,
-			Todo: todos,
+		
 		}, err
 	}
 
 	return &proto.GetAllResponse{
 		Api:  apiVer,
+		Todo: todos,
 	}, nil
 }
 

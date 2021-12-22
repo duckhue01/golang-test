@@ -33,6 +33,7 @@ services:
       dockerfile: service.Dockerfile
     ports:
       - "4040:4040"
+    restart: on-failure
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: "secret"
       MYSQL_DATABASE: "todos"
@@ -54,8 +55,10 @@ services:
       dockerfile: gateway.Dockerfile
     ports:
       - "8080:8080"
+    restart: on-failure
     depends_on:
       - grpc
+      - db
     networks:
       - golang_test
       
