@@ -1,11 +1,14 @@
 ##  Todo list API using Golang with protobuf, and grpc-gateway
 
-### Local Development Guideline:
+### Diagram:
+![](dia.png)
+
+### Setup with Docker:
   **Prerequisites**
   1. Docker & Docker Compose
   2. Git
 
-  
+
   **Setup Instructions**
   1. Clone the project to local machine and go to the folder<br>
     ```zsh
@@ -16,6 +19,9 @@
     ```zsh
     docker-compose up --build
     ```
+
+### Manually Setup:
+
 ### REST API Documentation:
   **Create Todo**
   ----

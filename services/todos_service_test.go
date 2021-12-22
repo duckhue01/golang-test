@@ -3,11 +3,11 @@ package services
 import (
 	"context"
 	"fmt"
-	"reflect"
 	"testing"
 	"time"
 
 	proto "github.com/duckhue01/golang_test/proto/v1"
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -67,7 +67,66 @@ func (i *InMemoStore) Delete(ctx context.Context, id int32) error {
 	return fmt.Errorf("Todo with ID='%d' is not found", id)
 }
 
-var s = NewTodosService(&InMemoStore{})
+var s = NewTodosService(&InMemoStore{
+	todos: []proto.Todo{
+		{
+			Id:          1,
+			Title:       "asdasd",
+			Description: "asdasd",
+			CreateAt: &timestamp.Timestamp{
+				Seconds: 123123123,
+				Nanos:   123123123,
+			},
+			UpdateAt: &timestamp.Timestamp{
+				Seconds: 123123123,
+				Nanos:   123123123,
+			},
+			IsDone: false,
+		},
+		{
+			Id:          2,
+			Title:       "asdasd",
+			Description: "asdasd",
+			CreateAt: &timestamp.Timestamp{
+				Seconds: 123123123,
+				Nanos:   123123123,
+			},
+			UpdateAt: &timestamp.Timestamp{
+				Seconds: 123123123,
+				Nanos:   123123123,
+			},
+			IsDone: false,
+		},
+		{
+			Id:          3,
+			Title:       "asdasd",
+			Description: "asdasd",
+			CreateAt: &timestamp.Timestamp{
+				Seconds: 123123123,
+				Nanos:   123123123,
+			},
+			UpdateAt: &timestamp.Timestamp{
+				Seconds: 123123123,
+				Nanos:   123123123,
+			},
+			IsDone: false,
+		},
+		{
+			Id:          4,
+			Title:       "asdasd",
+			Description: "asdasd",
+			CreateAt: &timestamp.Timestamp{
+				Seconds: 123123123,
+				Nanos:   123123123,
+			},
+			UpdateAt: &timestamp.Timestamp{
+				Seconds: 123123123,
+				Nanos:   123123123,
+			},
+			IsDone: false,
+		},
+	},
+})
 
 func TestTodosService_checkAPI(t *testing.T) {
 
@@ -95,7 +154,7 @@ func TestTodosService_checkAPI(t *testing.T) {
 	}
 }
 
-func TestTodosService_Add(t *testing.T) {
+func TestTodosServiceAdd(t *testing.T) {
 	ti := time.Now().In(time.UTC)
 	createAt := timestamppb.New(ti)
 
@@ -106,52 +165,27 @@ func TestTodosService_Add(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *proto.AddResponse
 		wantErr bool
 	}{
-		{"test case #1", args{context.Background(), &proto.AddRequest{
+		{"test if todo id added successfully", args{context.Background(), &proto.AddRequest{
 			Api: "v1",
 			Todo: &proto.Todo{
-				Id:          1,
 				Title:       "asdasd",
 				Description: "asdasd",
 				CreateAt:    createAt,
 				UpdateAt:    createAt,
 				IsDone:      false,
 			},
-		}},
-			&proto.AddResponse{
-				Api:  apiVer,
-			}, false,
-		},
-		{"test case #2", args{context.Background(), &proto.AddRequest{
-			Api: "v2",
-			Todo: &proto.Todo{
-				Id:          1,
-				Title:       "asdasd",
-				Description: "asdasd",
-				CreateAt:    createAt,
-				UpdateAt:    createAt,
-				IsDone:      false,
-			},
-		}},
-			&proto.AddResponse{
-				Api:  apiVer,
-			}, true,
+		}}, false,
 		},
 	}
-
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			got, err := s.Add(tt.args.ctx, tt.args.req)
+			_, err := s.Add(tt.args.ctx, tt.args.req)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("TodosService.Add() error = %v, wantErr %v", err, tt.wantErr)
 				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("TodosService.Add() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -166,120 +200,179 @@ func TestTodosServiceGetOne(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *proto.GetOneResponse
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			"get todo exist in database",
+			args{context.Background(),
+				&proto.GetOneRequest{
+					Api: "v1",
+					Id:  2,
+				}},
+
+			false,
+		},
+		{
+			"get todo doesn't exist in database",
+			args{context.Background(),
+				&proto.GetOneRequest{
+					Api: "v1",
+					Id:  10000,
+				}},
+
+			true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			got, err := s.GetOne(tt.args.ctx, tt.args.req)
+			_, err := s.GetOne(tt.args.ctx, tt.args.req)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("TodosService.GetOne() error = %v, wantErr %v", err, tt.wantErr)
 				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("TodosService.GetOne() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
 func TestTodosServiceGetAll(t *testing.T) {
-	type fields struct {
-		Store TodosStore
-	}
 	type args struct {
 		ctx context.Context
 		req *proto.GetAllRequest
 	}
 	tests := []struct {
 		name    string
-		fields  fields
 		args    args
-		want    *proto.GetAllResponse
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			"test case #1",
+			args{context.Background(),
+				&proto.GetAllRequest{
+					Api: "v1",
+				}},
+			false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			got, err := s.GetAll(tt.args.ctx, tt.args.req)
+			_, err := s.GetAll(tt.args.ctx, tt.args.req)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("TodosService.GetAll() error = %v, wantErr %v", err, tt.wantErr)
 				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("TodosService.GetAll() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
 func TestTodosServiceUpdate(t *testing.T) {
-	type fields struct {
-		Store TodosStore
-	}
+
 	type args struct {
 		ctx context.Context
 		req *proto.UpdateRequest
 	}
 	tests := []struct {
 		name    string
-		fields  fields
 		args    args
-		want    *proto.UpdateResponse
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			"updating record doesn't exist in database",
+			args{context.Background(),
+				&proto.UpdateRequest{
+					Api: "v1",
+					Todo: &proto.Todo{
+						Id:          1000,
+						Title:       "asdasd",
+						Description: "asdasd",
+						CreateAt: &timestamp.Timestamp{
+							Seconds: 123123123,
+							Nanos:   123123123,
+						},
+						UpdateAt: &timestamp.Timestamp{
+							Seconds: 123123123,
+							Nanos:   123123123,
+						},
+						IsDone: false,
+					},
+				}},
+			true,
+		},
+		{
+			"updating record exist in database",
+			args{context.Background(),
+				&proto.UpdateRequest{
+					Api: "v1",
+					Todo: &proto.Todo{
+						Id:          3,
+						Title:       "duckhue01",
+						Description: "duckhue01",
+						CreateAt: &timestamp.Timestamp{
+							Seconds: 123123123,
+							Nanos:   123123123,
+						},
+						UpdateAt: &timestamp.Timestamp{
+							Seconds: 123123123,
+							Nanos:   123123123,
+						},
+						IsDone: true,
+					},
+				}},
+			false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			got, err := s.Update(tt.args.ctx, tt.args.req)
+			_, err := s.Update(tt.args.ctx, tt.args.req)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("TodosService.Update() error = %v, wantErr %v", err, tt.wantErr)
 				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("TodosService.Update() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
 func TestTodosServiceDelete(t *testing.T) {
-	type fields struct {
-		Store TodosStore
-	}
 	type args struct {
 		ctx context.Context
 		req *proto.DeleteRequest
 	}
 	tests := []struct {
 		name    string
-		fields  fields
+
 		args    args
-		want    *proto.DeleteResponse
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			"delete record doesn't exist in database",
+			args{context.Background(),
+				&proto.DeleteRequest{
+					Api: "v1",
+					Id:  10000,
+				}},
+			true,
+		},
+		{
+			"delete record exist in database",
+			args{context.Background(),
+				&proto.DeleteRequest{
+					Api: "v1",
+					Id:  1,
+				}},
+			false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			got, err := s.Delete(tt.args.ctx, tt.args.req)
+			_, err := s.Delete(tt.args.ctx, tt.args.req)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("TodosService.Delete() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("TodosService.Delete() = %v, want %v", got, tt.want)
-			}
+
 		})
 	}
 }
-
-

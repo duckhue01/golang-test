@@ -81,7 +81,7 @@ func TestTodosServiceGetOne(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"test case #1",
+			"get todo exist in database",
 			args{context.Background(),
 				&proto.GetOneRequest{
 					Api: "v1",
@@ -91,7 +91,7 @@ func TestTodosServiceGetOne(t *testing.T) {
 			false,
 		},
 		{
-			"test case #2",
+			"get todo doesn't exist in database",
 			args{context.Background(),
 				&proto.GetOneRequest{
 					Api: "v1",
@@ -99,15 +99,6 @@ func TestTodosServiceGetOne(t *testing.T) {
 				}},
 
 			true,
-		},
-		{
-			"test case #3",
-			args{context.Background(),
-				&proto.GetOneRequest{
-					Api: "v1",
-					Id:  3,
-				}},
-			false,
 		},
 	}
 	for _, tt := range tests {
@@ -165,7 +156,7 @@ func TestTodosServiceDelete(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"test case #1",
+			"delete record doesn't exist in database",
 			args{context.Background(),
 				&proto.DeleteRequest{
 					Api: "v1",

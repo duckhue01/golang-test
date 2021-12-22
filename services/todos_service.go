@@ -41,8 +41,6 @@ func (s *TodosService) checkAPI(api string) error {
 }
 
 func (s *TodosService) Add(ctx context.Context, req *proto.AddRequest) (*proto.AddResponse, error) {
-
-
 	if err := s.checkAPI(req.Api); err != nil {
 		return &proto.AddResponse{
 			Api:  apiVer,
