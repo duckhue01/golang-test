@@ -22,11 +22,11 @@ services:
 
     # we mount a data volume to make sure we don't lose data
     volumes:
-      - mysql_data:/var/lib/mysql
+      - golang_test:/var/lib/mysql
     command: --default-authentication-plugin=mysql_native_password
 
   grpc:
-    container_name:  "grpc"
+    container_name: "grpc"
     # we want to use the image which is build from our Dockerfile
     build:
       context: .
@@ -47,8 +47,19 @@ services:
       - .:/app/
     networks:
       - golang_test
-
+  gateway:
+    container_name: "gateway"
+    build:
+      context: .
+      dockerfile: gateway.Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - grpc
+    networks:
+      - golang_test
+      
 networks:
-  golang_test:
+  golang_test: null
 volumes:
-  mysql_data:
+  golang_test: null

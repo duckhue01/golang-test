@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 
 	proto "github.com/duckhue01/golang_test/proto/v1"
 	"google.golang.org/grpc/codes"
@@ -39,12 +40,13 @@ func (s *TodosService) checkAPI(api string) error {
 }
 
 func (s *TodosService) Add(ctx context.Context, req *proto.AddRequest) (*proto.AddResponse, error) {
+
+	fmt.Println(req)
+
 	// check if the API version requested by client is supported by server
 	if err := s.checkAPI(req.Api); err != nil {
 		return &proto.AddResponse{
 			Api:  apiVer,
-			IsOk: false,
-			Mes:  err.Error(),
 		}, err
 	}
 
@@ -53,14 +55,13 @@ func (s *TodosService) Add(ctx context.Context, req *proto.AddRequest) (*proto.A
 	if err != nil {
 		return &proto.AddResponse{
 			Api:  apiVer,
-			IsOk: false,
-			Mes:  err.Error(),
+
 		}, err
 
 	}
 	return &proto.AddResponse{
 		Api:  apiVer,
-		IsOk: true,
+
 	}, nil
 }
 
@@ -68,8 +69,7 @@ func (s *TodosService) GetOne(ctx context.Context, req *proto.GetOneRequest) (*p
 	if err := s.checkAPI(req.Api); err != nil {
 		return &proto.GetOneResponse{
 			Api:  apiVer,
-			IsOk: false,
-			Mes:  err.Error(),
+
 		}, err
 	}
 
@@ -77,41 +77,35 @@ func (s *TodosService) GetOne(ctx context.Context, req *proto.GetOneRequest) (*p
 	if err != nil {
 		return &proto.GetOneResponse{
 			Api:  apiVer,
-			IsOk: false,
-			Mes:  err.Error(),
+
 		}, err
 	}
 
 	return &proto.GetOneResponse{
 		Api:  apiVer,
-		IsOk: true,
 		Todo: todo,
 	}, nil
 }
 
 func (s *TodosService) GetAll(ctx context.Context, req *proto.GetAllRequest) (*proto.GetAllResponse, error) {
-
+	fmt.Println(req)
 	if err := s.checkAPI(req.Api); err != nil {
 		return &proto.GetAllResponse{
 			Api:  apiVer,
-			IsOk: false,
-			Mes:  err.Error(),
+
 		}, err
 	}
 
-	todo, err := s.Store.GetAll(ctx)
+	todos, err := s.Store.GetAll(ctx)
 	if err != nil {
 		return &proto.GetAllResponse{
 			Api:  apiVer,
-			IsOk: false,
-			Mes:  err.Error(),
+			Todo: todos,
 		}, err
 	}
 
 	return &proto.GetAllResponse{
 		Api:  apiVer,
-		IsOk: true,
-		Todo: todo,
 	}, nil
 }
 
@@ -119,8 +113,7 @@ func (s *TodosService) Update(ctx context.Context, req *proto.UpdateRequest) (*p
 	if err := s.checkAPI(req.Api); err != nil {
 		return &proto.UpdateResponse{
 			Api:  apiVer,
-			IsOk: false,
-			Mes:  err.Error(),
+
 		}, err
 	}
 
@@ -128,14 +121,13 @@ func (s *TodosService) Update(ctx context.Context, req *proto.UpdateRequest) (*p
 	if err != nil {
 		return &proto.UpdateResponse{
 			Api:  apiVer,
-			IsOk: false,
-			Mes:  err.Error(),
+
 		}, err
 	}
 
 	return &proto.UpdateResponse{
 		Api:  apiVer,
-		IsOk: true,
+
 	}, nil
 }
 
@@ -143,8 +135,7 @@ func (s *TodosService) Delete(ctx context.Context, req *proto.DeleteRequest) (*p
 	if err := s.checkAPI(req.Api); err != nil {
 		return &proto.DeleteResponse{
 			Api:  apiVer,
-			IsOk: false,
-			Mes:  err.Error(),
+
 		}, err
 	}
 
@@ -152,14 +143,12 @@ func (s *TodosService) Delete(ctx context.Context, req *proto.DeleteRequest) (*p
 	if err != nil {
 		return &proto.DeleteResponse{
 			Api:  apiVer,
-			IsOk: false,
-			Mes:  err.Error(),
+
 		}, err
 	}
 
 	return &proto.DeleteResponse{
 		Api:  apiVer,
-		IsOk: true,
 	}, nil
 }
 

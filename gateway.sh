@@ -1,0 +1,1 @@
+CompileDaemon --build="go build -o main gateway/gateway.go"  --command=./main

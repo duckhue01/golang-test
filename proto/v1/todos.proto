@@ -17,8 +17,7 @@ message Todo {
 // add resquest reponse pair
 message AddResponse { 
   string api = 1;
-  bool isOk = 2;
-  string mes= 3;
+
 }
 message AddRequest {
   string api = 1;
@@ -34,8 +33,7 @@ message GetAllRequest {
 message GetAllResponse {
   string api = 1;
   repeated Todo todo = 2;
-  bool isOk = 3;
-  string mes= 4;
+
 }
 
 
@@ -47,8 +45,6 @@ message GetOneRequest {
 message GetOneResponse {
   string api = 1;
   Todo todo = 2;
-  bool isOk = 3;
-  string mes= 4;
 }
 
 // update request response pair
@@ -58,8 +54,6 @@ message UpdateRequest {
 }
 message UpdateResponse {
   string api = 1;
-  bool isOk = 2;
-  string mes= 3;
 }
 
 
@@ -70,8 +64,6 @@ message DeleteRequest {
 }
 message DeleteResponse {
   string api = 1;
-  bool isOk = 2;
-  string mes= 3;
 }
 
 
@@ -79,30 +71,30 @@ message DeleteResponse {
 service TodosService {
   rpc Add(AddRequest) returns (AddResponse){
     option (google.api.http) = {
-      post: "/v1/todos"
+      post: "/{api}/todos"
       body: "*"
     }; 
   };
   rpc GetAll(GetAllRequest) returns (GetAllResponse) {
     option (google.api.http) = {
-      get: "/v1/todos"
+      get: "/{api}/todos"
     };
   };
   rpc GetOne(GetOneRequest) returns (GetOneResponse) {
     option (google.api.http) = {
-      get: "/v1/todos/{id}"
+      get: "/{api}/todos/{id}"
     };
   };
   rpc Update(UpdateRequest) returns (UpdateResponse ) {
     option (google.api.http) = {
-      put: "/v1/todos"
+      put: "/{api}/todos"
       body: "*"
     };
   };
 
   rpc Delete(DeleteRequest) returns (DeleteResponse) {
     option (google.api.http) = {
-      delete: "/v1/todos/{id}"
+      delete: "/{api}/todos/{id}"
     };
   };
 

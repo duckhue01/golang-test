@@ -2,9 +2,7 @@ package main
 
 import (
 	"net"
-
-	// "github.com/duckhue01/golang_test/gateway"
-	"github.com/duckhue01/golang_test/db"
+	"github.com/duckhue01/golang_test/database"
 	proto "github.com/duckhue01/golang_test/proto/v1"
 	"github.com/duckhue01/golang_test/services"
 	"google.golang.org/grpc"
@@ -24,5 +22,5 @@ func main() {
 	if e := srv.Serve(listener); e != nil {
 		panic(e)
 	}
-	// gateway.RunGateWay()
+
 }
