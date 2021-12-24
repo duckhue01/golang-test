@@ -11,15 +11,14 @@
     - status == nil && tags == nil<br>
     - status != nil && tags == nil<br>
     - status == nil && tags != nil<br>
-    - status != nil && tags != nil
+    - status != nil && tags != nil <br>
   *but i feed that this solution is'nt the best, because it too long*<br>
 
-  4. main idea: 
-
+  4. main idea. 
     - i create new field in table in order to store the index of Todo  and take in two input:
       1. Id: id of Todo
       2. Pos: index that we want to move to
-    - we have todo1-todo2-todo3-todo4-todo5. There are 2 cases:
+    - There are 2 cases:
       1. bot-to-top: we want move Todo from larger index to smaller index
       2. top-to-bot: we want to move Todo from smaller index to larger index
     
