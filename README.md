@@ -7,13 +7,13 @@
 
   2. main idea: i create extra table to store Tags of Todo, this will prevent database from store redundant data.
 
-  3. main idea: i create sql query for 4 scenarios: 
-    - status == nil && tags == nil
-    - status != nil && tags == nil
-    - status == nil && tags != nil
+  3. main idea: i create sql query for 4 scenarios:<br>
+    - status == nil && tags == nil<br>
+    - status != nil && tags == nil<br>
+    - status == nil && tags != nil<br>
     - status != nil && tags != nil
+  *but i feed that this solution is'nt the best, because it too long*<br>
 
-  *but i feed that this solution is'nt the best, because it too long*
   4. main idea: 
 
     - i create new field in table in order to store the index of Todo  and take in two input:
