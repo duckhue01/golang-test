@@ -3,19 +3,19 @@ Content-Type: application/json
 
 {
    "todo":{
-      "id":2,
+      "id":8,
       "title":"dasdas",
       "description":"asdasdasd",
       "createAt":"2020-01-15T01:30:15.01Z",
       "updateAt":"2020-01-15T01:30:15.01Z",
-      "status":2,
-      "tags":["sleep", "relax"]
+      "status":0,
+      "tags":["Weekly"]
    }
 }
 
 ###
 
-GET http://127.0.0.1:8080/v2/todos?pag=100&tags=Sleep&tags=relax&status=2  HTTP/1.1
+GET http://127.0.0.1:8080/v2/todos?pag=100&status=2  HTTP/1.1
 Content-Type: application/json
 
 
@@ -51,10 +51,10 @@ Content-Type: application/json
 
 ###
 
-PUT  http://127.0.0.1:8080/v2/todos/reorder/17 HTTP/1.1
+PUT  http://127.0.0.1:8080/v2/todos/reorder/2 HTTP/1.1
 Content-Type: application/json
 
 {
    "api":"v2",
-   "pos":-100
+   "pos":0
 }

@@ -88,6 +88,16 @@
   Get all todos are stored in database
   * **URL** ` /v2/todos`
   * **Method:** `GET`
+
+  * **URL parameters:** 
+    pag,tags,status
+
+  * **Sample Call:**
+
+  ```json
+  GET http://127.0.0.1:8080/v2/todos?pag=100&tags=Sleep&tags=relax&status=2  HTTP/1.1
+  Content-Type: application/json
+  ```
     
   * **Success Response:**
 
@@ -125,18 +135,6 @@
         ]
       }
       ```
-  * **URL parameters:** 
-    pag,tags,status
-
-
-
-
-  * **Sample Call:**
-
-    ```json
-    GET http://127.0.0.1:8080/v2/todos?pag=100&tags=Sleep&tags=relax&status=2  HTTP/1.1
-    Content-Type: application/json
-    ```
 
 
     
@@ -277,8 +275,28 @@
   reorder existing todo
   * **URL** `/v2/todos/reorder/:id`
   
-  
   * **Method:** `PUT`
+
+  * **Sample Call:**
+  ```json
+  PUT  http://127.0.0.1:8080/v2/todos/reorder/1 HTTP/1.1
+  Content-Type: application/json
+
+  {
+    "api":"v2",
+    "pos":10
+  }
+  ```
+
+  ```json
+  PUT  http://127.0.0.1:8080/v2/todos/reorder/10 HTTP/1.1
+  Content-Type: application/json
+
+  {
+    "api":"v2",
+    "pos":1
+  }
+  ```
     
   * **Success Response:**
 
@@ -298,23 +316,3 @@
       "details": []
     }
     ``` 
-  * **Sample Call:**
-    ```json
-    PUT  http://127.0.0.1:8080/v2/todos/reorder/1 HTTP/1.1
-    Content-Type: application/json
-
-    {
-      "api":"v2",
-      "pos":10
-    }
-    ```
-
-    ```json
-    PUT  http://127.0.0.1:8080/v2/todos/reorder/10 HTTP/1.1
-    Content-Type: application/json
-
-    {
-      "api":"v2",
-      "pos":1
-    }
-    ```
