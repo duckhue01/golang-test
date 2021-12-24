@@ -8,23 +8,22 @@
   2. main idea: i create extra table to store Tags of Todo, this will prevent database from store redundant data.
 
   3. main idea: i create sql query for 4 scenarios:<br>
-    - status == nil && tags == nil<br>
-    - status != nil && tags == nil<br>
-    - status == nil && tags != nil<br>
-    - status != nil && tags != nil <br>
-  *but i feed that this solution is'nt the best, because it too long*<br>
+    + status == nil && tags == nil<br>
+    + status != nil && tags == nil<br>
+    + status == nil && tags != nil<br>
+    + status != nil && tags != nil <br>
 
   4. main idea: i create new field in table in order to store the index of Todo  and take in two input: Id: id of Todo ,Pos: index that we want to move to
-  
-    - There are 2 cases:
+
+    + There are 2 cases:
       - bot-to-top: we want move Todo from larger index to smaller index
       - top-to-bot: we want to move Todo from smaller index to larger index
     
-    - in case bot-to-top:
+    + in case bot-to-top:
       - we increase all index of Todo in range [Pos, Id) by 1
       - we change the index of Todo to Pos
 
-    - in case top-to-bottom:
+    + in case top-to-bottom:
       - we decrease all index of Todo in range (Id, Pos] by 1
       - we change the index of Todo to Pos
 
