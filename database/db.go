@@ -5,16 +5,12 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 	"strings"
-
-	// "strings"
-
-	// "os"
 	"time"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/golang/protobuf/ptypes"
-
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -28,14 +24,15 @@ type DatabaseStore struct {
 
 func NewDatabaseStore() *DatabaseStore {
 	cfg := mysql.Config{
-		User:                 "duckhue01",
-		Passwd:               "195106",
-		DBName:               "todos",
+		User:                 os.Getenv("MYSQL_USER"),
+		Passwd:               os.Getenv("MYSQL_PASSWORD"),
+		DBName:               os.Getenv("MYSQL_DATABASE"),
 		Net:                  "tcp",
-		Addr:                 "127.0.0.1:3306",
+		Addr:                 "db:3306",
 		AllowNativePasswords: true,
 		ParseTime:            true,
 	}
+
 	db, err := sql.Open("mysql", cfg.FormatDSN())
 	if err != nil {
 		log.Fatal(err)
@@ -76,23 +73,24 @@ func (d *DatabaseStore) Add(ctx context.Context, req *proto.AddRequest) error {
 	}
 
 	// add todo to  Todo table
-	re, err := c.ExecContext(ctx, "INSERT INTO Todo(`Id`, `Title`, `Description`, `createAt`, `UpdateAt`, `Status`) VALUES(?, ?, ?, ?, ?, ?)",
+	_, err = c.ExecContext(ctx, "INSERT INTO Todo(`Id`, `Title`, `Description`, `createAt`, `UpdateAt`, `Status`) VALUES(?, ?, ?, ?, ?, ?)",
 		req.Todo.GetId(), req.Todo.GetTitle(), req.Todo.GetDescription(), createAt, updateAt, req.Todo.GetStatus())
 	if err != nil {
 		return err
 	}
-	lastID, err := re.LastInsertId()
 	if err != nil {
 		return err
 	}
 	for _, v := range req.Todo.Tags {
+
 		// add tag to Tag table
 		_, err = c.ExecContext(ctx, "CALL AddTagIfNotExist(?)", v)
 		if err != nil {
 			return err
 		}
+
 		// add tag and todo to TagTodo table
-		_, err = c.ExecContext(ctx, "CALL AddTagTodoIfNotExist(?, ?)", v, lastID)
+		_, err = c.ExecContext(ctx, "CALL AddTagTodoIfNotExist(?, ?)", v, req.Todo.GetId())
 		if err != nil {
 			return err
 		}
@@ -124,7 +122,7 @@ func (d *DatabaseStore) GetOne(ctx context.Context, id int32) (*proto.Todo, erro
 	var td proto.Todo
 	var createAt time.Time
 	var updateAt time.Time
-	if err := rows.Scan(&td.Id, &td.Title, &td.Description, &createAt, &updateAt, &td.Status); err != nil {
+	if err := rows.Scan(&td.Id, &td.Title, &td.Description, &createAt, &updateAt, &td.Status, &td.Order); err != nil {
 		return nil, status.Error(codes.Unknown, "failed to retrieve field values from Todo row-> "+err.Error())
 	}
 
@@ -178,7 +176,7 @@ func (d *DatabaseStore) GetAll(ctx context.Context, req *proto.GetAllRequest) ([
 	// divide into 4 cases to avoid the complexity of concatnation
 	// but it also too long
 	if req.Status == nil && req.Tags == nil {
-		rows, err = c.QueryContext(ctx, "SELECT * FROM Todo ORDER BY `Id` DESC LIMIT ?", lim)
+		rows, err = c.QueryContext(ctx, "SELECT * FROM Todo ORDER BY `Order` DESC LIMIT ?", lim)
 	}
 
 	if req.Status != nil && req.Tags == nil {
@@ -196,7 +194,7 @@ func (d *DatabaseStore) GetAll(ctx context.Context, req *proto.GetAllRequest) ([
 			}
 		}
 		temp = "[" + temp + "]"
-		rows, err = c.QueryContext(ctx, "SELECT * FROM Todo WHERE Status REGEXP ? ORDER BY `Id` DESC LIMIT ?", temp, lim)
+		rows, err = c.QueryContext(ctx, "SELECT * FROM Todo WHERE Status REGEXP ? ORDER BY `Order` DESC LIMIT ?", temp, lim)
 
 	}
 
@@ -207,7 +205,7 @@ func (d *DatabaseStore) GetAll(ctx context.Context, req *proto.GetAllRequest) ([
 			temp[i] = fmt.Sprintf("%s%s%s", "^", req.Tags[i], "$")
 		}
 
-		rows, err = c.QueryContext(ctx, "SELECT * FROM Todo WHERE Id IN (SELECT DISTINCT `Id`  FROM `TagTodo` WHERE `Tag` REGEXP ? ) ORDER BY `Id` DESC LIMIT ?", strings.Join(temp, "|"), lim)
+		rows, err = c.QueryContext(ctx, "SELECT * FROM Todo WHERE Id IN (SELECT DISTINCT `Id`  FROM `TagTodo` WHERE `Tag` REGEXP ? ) ORDER BY `Order` DESC LIMIT ?", strings.Join(temp, "|"), lim)
 	}
 
 	if req.Tags != nil && req.Status != nil {
@@ -230,7 +228,7 @@ func (d *DatabaseStore) GetAll(ctx context.Context, req *proto.GetAllRequest) ([
 		}
 		sTemp = "[" + sTemp + "]"
 
-		rows, err = c.QueryContext(ctx, "SELECT * FROM Todo WHERE Id IN (SELECT DISTINCT `Id`  FROM `TagTodo` WHERE `Tag` REGEXP ? ) AND Status REGEXP ? ORDER BY `Id` DESC LIMIT ?", strings.Join(tTemp, "|"), sTemp, lim)
+		rows, err = c.QueryContext(ctx, "SELECT * FROM Todo WHERE Id IN (SELECT DISTINCT `Id`  FROM `TagTodo` WHERE `Tag` REGEXP ? ) AND Status REGEXP ? ORDER BY `Order` DESC LIMIT ?", strings.Join(tTemp, "|"), sTemp, lim)
 	}
 
 	// check error for all 4 query
@@ -244,7 +242,7 @@ func (d *DatabaseStore) GetAll(ctx context.Context, req *proto.GetAllRequest) ([
 	list := []*proto.Todo{}
 	for rows.Next() {
 		td := &proto.Todo{}
-		if err := rows.Scan(&td.Id, &td.Title, &td.Description, &createAt, &updateAt, &td.Status); err != nil {
+		if err := rows.Scan(&td.Id, &td.Title, &td.Description, &createAt, &updateAt, &td.Status, &td.Order); err != nil {
 			return nil, status.Error(codes.Unknown, "failed to retrieve field values from Todo row-> "+err.Error())
 		}
 
@@ -346,6 +344,7 @@ func (d *DatabaseStore) Reorder(ctx context.Context, req *proto.ReorderRequest) 
 	}
 	defer c.Close()
 
+	// get the order of Todo
 	res, err := c.QueryContext(ctx, "SELECT `Order` FROM `Todo` WHERE `Id` = ? LIMIT 1", req.Id)
 	if err != nil {
 		return status.Error(codes.Unknown, "failed to reorder Todo-> "+err.Error())
@@ -363,14 +362,13 @@ func (d *DatabaseStore) Reorder(ctx context.Context, req *proto.ReorderRequest) 
 		return status.Error(codes.Unknown, "failed to retrieve field values from Todo row-> "+err.Error())
 	}
 
-
-
 	c, err = d.connect(ctx)
 	if err != nil {
 		return err
 	}
 	defer c.Close()
 
+	// change order of Todo
 	res1, err := c.ExecContext(ctx, "CALL ReorderTodo(?, ?)", start, req.Pos)
 	if err != nil {
 		return status.Error(codes.Unknown, "failed to reorder Todo-> "+err.Error())

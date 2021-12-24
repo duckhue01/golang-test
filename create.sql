@@ -54,8 +54,6 @@ DELIMITER //
 
 CREATE PROCEDURE `ReOrderTodo`(IN id int(32), IN pos int(32) )
 BEGIN
-
-
   -- SELECT @s= (SELECT `Order`  FROM `Todo` WHERE `Id`= id LIMIT 1);
 
   IF (id > pos) THEN

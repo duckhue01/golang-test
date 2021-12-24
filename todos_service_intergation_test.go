@@ -35,13 +35,13 @@ func TestTodosServiceAdd(t *testing.T) {
 				&proto.AddRequest{
 					Api: apiVer,
 					Todo: &proto.Todo{
-						Id: 4,
+						Id: 12,
 						Title:       "Todo100",
 						Description: "sdfsdf",
 						CreateAt:    createAt,
 						UpdateAt:    createAt,
-						Status:      proto.Status_DOING,
-						Tags:        []string{"Relax", "Weekly", "Love"},
+						Status:      proto.Status_DONE,
+						Tags:        []string{"Relax", "as", "Love"},
 					},
 				}},
 			false,
@@ -134,9 +134,9 @@ func TestTodosServiceGetAll(t *testing.T) {
 			args{context.Background(),
 				&proto.GetAllRequest{
 					Api: apiVer,
-					// Pag: 3,
+					Pag: 3,
 					Status: []proto.Status{},
-					Tags:   []string{},
+					Tags:   []string{"sleep"},
 				}},
 			false,
 		},

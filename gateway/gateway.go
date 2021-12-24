@@ -11,6 +11,8 @@ import (
 	"google.golang.org/grpc"
 )
 
+
+// make sure to change this host address to grpc when deploy to docker
 var (
 	grpcServerEndpoint = flag.String("grpc-server-endpoint", "grpc:4040", "gRPC server endpoint")
 )

@@ -21,7 +21,8 @@ message Todo {
   google.protobuf.Timestamp createAt = 4;
   google.protobuf.Timestamp updateAt = 5; 
   repeated string tags = 6;
-  Status status = 7; 
+  Status status = 7;
+  int32 order =8; 
 }
 
 // add resquest reponse pair
@@ -123,7 +124,8 @@ service TodosService {
 
   rpc Reorder(ReorderRequest) returns (ReorderResponse) {
     option (google.api.http) = {
-      delete: "/{api}/todos/reorder/{id}"
+      put: "/{api}/todos/reorder/{id}"
+      body: "*"
     };
   };
 
