@@ -6,10 +6,13 @@ import (
 	"testing"
 	"time"
 
-	proto "github.com/duckhue01/golang_test/proto/v1"
+	proto "github.com/duckhue01/golang_test/proto/v2"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
+
+var ti = time.Now().In(time.UTC)
+var createAt = timestamppb.New(ti)
 
 type InMemoStore struct {
 	todos []proto.Todo
@@ -32,7 +35,7 @@ func (i *InMemoStore) GetOne(ctx context.Context, id int32) (*proto.Todo, error)
 	return nil, fmt.Errorf("Todo with ID='%d' is not found", id)
 }
 
-func (i *InMemoStore) GetAll(ctx context.Context) ([]*proto.Todo, error) {
+func (i *InMemoStore) GetAll(ctx context.Context, req *proto.GetAllRequest) ([]*proto.Todo, error) {
 	var todos []*proto.Todo
 	for idx := 0; idx < len(i.todos); idx++ {
 		todos = append(todos, &i.todos[idx])
@@ -67,92 +70,80 @@ func (i *InMemoStore) Delete(ctx context.Context, id int32) error {
 	return fmt.Errorf("Todo with ID='%d' is not found", id)
 }
 
+func (i *InMemoStore) Reorder(ctx context.Context, req *proto.ReorderRequest) error {
+	// for idx1 := 0; idx1 < len(i.todos); idx1++ {
+	// 	if i.todos[idx1].Id == id {
+	// 		for idx2 := idx1 + 1; idx2 < len(i.todos); idx2++ {
+	// 			i.todos[idx1] = i.todos[idx2]
+	// 			idx1++
+	// 		}
+	// 		return nil
+	// 	}
+	// }
+	// return fmt.Errorf("Todo with ID='%d' is not found", id)
+
+	return nil
+}
+
 var s = NewTodosService(&InMemoStore{
 	todos: []proto.Todo{
 		{
 			Id:          1,
-			Title:       "asdasd",
-			Description: "asdasd",
-			CreateAt: &timestamp.Timestamp{
-				Seconds: 123123123,
-				Nanos:   123123123,
-			},
-			UpdateAt: &timestamp.Timestamp{
-				Seconds: 123123123,
-				Nanos:   123123123,
-			},
-			IsDone: false,
+			Title:       "duckhue02",
+			Description: "sdfsdf",
+			CreateAt:    createAt,
+			UpdateAt:    createAt,
+			Status:      proto.Status_DOING,
+			Tags:        []string{"Relax", "Weekly", "Love"},
 		},
 		{
 			Id:          2,
-			Title:       "asdasd",
-			Description: "asdasd",
-			CreateAt: &timestamp.Timestamp{
-				Seconds: 123123123,
-				Nanos:   123123123,
-			},
-			UpdateAt: &timestamp.Timestamp{
-				Seconds: 123123123,
-				Nanos:   123123123,
-			},
-			IsDone: false,
+			Title:       "duckhue02",
+			Description: "sdfsdf",
+			CreateAt:    createAt,
+			UpdateAt:    createAt,
+			Status:      proto.Status_DOING,
+			Tags:        []string{"Relax", "Weekly", "Love"},
 		},
 		{
 			Id:          3,
-			Title:       "asdasd",
-			Description: "asdasd",
-			CreateAt: &timestamp.Timestamp{
-				Seconds: 123123123,
-				Nanos:   123123123,
-			},
-			UpdateAt: &timestamp.Timestamp{
-				Seconds: 123123123,
-				Nanos:   123123123,
-			},
-			IsDone: false,
+			Title:       "duckhue02",
+			Description: "sdfsdf",
+			CreateAt:    createAt,
+			UpdateAt:    createAt,
+			Status:      proto.Status_DOING,
+			Tags:        []string{"Relax", "Weekly", "Love"},
 		},
+
 		{
 			Id:          4,
-			Title:       "asdasd",
-			Description: "asdasd",
-			CreateAt: &timestamp.Timestamp{
-				Seconds: 123123123,
-				Nanos:   123123123,
-			},
-			UpdateAt: &timestamp.Timestamp{
-				Seconds: 123123123,
-				Nanos:   123123123,
-			},
-			IsDone: false,
+			Title:       "duckhue02",
+			Description: "sdfsdf",
+			CreateAt:    createAt,
+			UpdateAt:    createAt,
+			Status:      proto.Status_DOING,
+			Tags:        []string{"Relax", "Weekly", "Love"},
+		},
+		{
+			Id:          5,
+			Title:       "duckhue02",
+			Description: "sdfsdf",
+			CreateAt:    createAt,
+			UpdateAt:    createAt,
+			Status:      proto.Status_DOING,
+			Tags:        []string{"Relax", "Weekly", "Love"},
+		},
+		{
+			Id:          6,
+			Title:       "duckhue02",
+			Description: "sdfsdf",
+			CreateAt:    createAt,
+			UpdateAt:    createAt,
+			Status:      proto.Status_DOING,
+			Tags:        []string{"Relax", "Weekly", "Love"},
 		},
 	},
 })
-
-func TestTodosService_checkAPI(t *testing.T) {
-
-	type args struct {
-		api string
-	}
-	tests := []struct {
-		name    string
-		args    args
-		wantErr bool
-	}{
-		{"test v1", args{api: "v1"}, false},
-		{"test v2", args{api: "v2"}, true},
-		{"test v3", args{api: "v3"}, true},
-		{"test v4", args{api: "v4"}, true},
-		{"test -1", args{api: "-1"}, true},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-
-			if err := s.checkAPI(tt.args.api); (err != nil) != tt.wantErr {
-				t.Errorf("TodosService.checkAPI() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
-}
 
 func TestTodosServiceAdd(t *testing.T) {
 	ti := time.Now().In(time.UTC)
@@ -168,13 +159,13 @@ func TestTodosServiceAdd(t *testing.T) {
 		wantErr bool
 	}{
 		{"test if todo id added successfully", args{context.Background(), &proto.AddRequest{
-			Api: "v1",
+			Api: "v2",
 			Todo: &proto.Todo{
-				Title:       "asdasd",
+				Title:       "Todo1",
 				Description: "asdasd",
 				CreateAt:    createAt,
 				UpdateAt:    createAt,
-				IsDone:      false,
+				Status:      proto.Status_TODO,
 			},
 		}}, false,
 		},
@@ -206,7 +197,7 @@ func TestTodosServiceGetOne(t *testing.T) {
 			"get todo exist in database",
 			args{context.Background(),
 				&proto.GetOneRequest{
-					Api: "v1",
+					Api: "v2",
 					Id:  2,
 				}},
 
@@ -216,7 +207,7 @@ func TestTodosServiceGetOne(t *testing.T) {
 			"get todo doesn't exist in database",
 			args{context.Background(),
 				&proto.GetOneRequest{
-					Api: "v1",
+					Api: "v2",
 					Id:  10000,
 				}},
 
@@ -249,7 +240,7 @@ func TestTodosServiceGetAll(t *testing.T) {
 			"test case #1",
 			args{context.Background(),
 				&proto.GetAllRequest{
-					Api: "v1",
+					Api: "v2",
 				}},
 			false,
 		},
@@ -281,7 +272,7 @@ func TestTodosServiceUpdate(t *testing.T) {
 			"updating record doesn't exist in database",
 			args{context.Background(),
 				&proto.UpdateRequest{
-					Api: "v1",
+					Api: "v2",
 					Todo: &proto.Todo{
 						Id:          1000,
 						Title:       "asdasd",
@@ -294,7 +285,7 @@ func TestTodosServiceUpdate(t *testing.T) {
 							Seconds: 123123123,
 							Nanos:   123123123,
 						},
-						IsDone: false,
+						Status: proto.Status_DOING,
 					},
 				}},
 			true,
@@ -303,7 +294,7 @@ func TestTodosServiceUpdate(t *testing.T) {
 			"updating record exist in database",
 			args{context.Background(),
 				&proto.UpdateRequest{
-					Api: "v1",
+					Api: "v2",
 					Todo: &proto.Todo{
 						Id:          3,
 						Title:       "duckhue01",
@@ -316,7 +307,7 @@ func TestTodosServiceUpdate(t *testing.T) {
 							Seconds: 123123123,
 							Nanos:   123123123,
 						},
-						IsDone: true,
+						Status: proto.Status_DOING,
 					},
 				}},
 			false,
@@ -340,7 +331,7 @@ func TestTodosServiceDelete(t *testing.T) {
 		req *proto.DeleteRequest
 	}
 	tests := []struct {
-		name    string
+		name string
 
 		args    args
 		wantErr bool
@@ -349,7 +340,7 @@ func TestTodosServiceDelete(t *testing.T) {
 			"delete record doesn't exist in database",
 			args{context.Background(),
 				&proto.DeleteRequest{
-					Api: "v1",
+					Api: "v2",
 					Id:  10000,
 				}},
 			true,
@@ -358,7 +349,7 @@ func TestTodosServiceDelete(t *testing.T) {
 			"delete record exist in database",
 			args{context.Background(),
 				&proto.DeleteRequest{
-					Api: "v1",
+					Api: "v2",
 					Id:  1,
 				}},
 			false,

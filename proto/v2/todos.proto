@@ -1,0 +1,130 @@
+syntax = "proto3";
+package v2;
+option go_package = "github.com/duckhue01/proto/v2";
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+
+
+enum Status {
+  TODO = 0;
+  DOING =1; 
+  DONE = 2;
+}; 
+
+
+// todo record
+message Todo {
+  int32 id = 1;
+  string title = 2;
+  string description = 3;
+  google.protobuf.Timestamp createAt = 4;
+  google.protobuf.Timestamp updateAt = 5; 
+  repeated string tags = 6;
+  Status status = 7; 
+}
+
+// add resquest reponse pair
+message AddResponse { 
+  string api = 1;
+
+}
+message AddRequest {
+  string api = 1;
+  Todo todo = 2; 
+}
+
+
+// get all request response pair
+message GetAllRequest {
+  string api = 1;
+  int32 pag =2;
+  repeated Status status = 3;
+  repeated string tags = 4;
+}
+message GetAllResponse {
+  string api = 1;
+  repeated Todo todo = 2;
+ 
+  
+}
+
+
+// get one request response pair
+message GetOneRequest {
+  string api = 1;
+  int32 id = 2;
+}
+message GetOneResponse {
+  string api = 1;
+  Todo todo = 2;
+}
+
+// update request response pair
+message UpdateRequest {
+  string api = 1;
+  Todo todo = 2;
+}
+message UpdateResponse {
+  string api = 1;
+}
+
+
+// delete request response pair
+message DeleteRequest {
+  string api = 1;
+  int32 id = 2;
+}
+message DeleteResponse {
+  string api = 1;
+}
+
+
+// reorder request response pair
+message ReorderRequest {
+  string api = 1;
+  int32 id = 2;
+  int32 pos = 3;
+}
+message ReorderResponse {
+  string api = 1;
+}
+
+
+service TodosService {
+  rpc Add(AddRequest) returns (AddResponse){
+    option (google.api.http) = {
+      post: "/{api}/todos"
+      body: "*"
+    }; 
+  };
+  rpc GetAll(GetAllRequest) returns (GetAllResponse) {
+    option (google.api.http) = {
+      get: "/{api}/todos"
+    };
+  };
+  rpc GetOne(GetOneRequest) returns (GetOneResponse) {
+    option (google.api.http) = {
+      get: "/{api}/todos/{id}"
+    };
+  };
+  rpc Update(UpdateRequest) returns (UpdateResponse ) {
+    option (google.api.http) = {
+      put: "/{api}/todos"
+      body: "*"
+    };
+  };
+
+  rpc Delete(DeleteRequest) returns (DeleteResponse) {
+    option (google.api.http) = {
+      delete: "/{api}/todos/{id}"
+    };
+  };
+
+  rpc Reorder(ReorderRequest) returns (ReorderResponse) {
+    option (google.api.http) = {
+      delete: "/{api}/todos/reorder/{id}"
+    };
+  };
+
+}

@@ -4,7 +4,8 @@ import (
 	"context"
 	"flag"
 	"net/http"
-	gw "github.com/duckhue01/golang_test/proto/v1"
+
+	gw "github.com/duckhue01/golang_test/proto/v2"
 	"github.com/golang/glog"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
@@ -35,6 +36,6 @@ func main() {
 	flag.Parse()
 	defer glog.Flush()
 	if err := runGateWay(); err != nil {
-    glog.Fatal(err)
+		glog.Fatal(err)
 	}
 }

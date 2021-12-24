@@ -2,13 +2,16 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
-	proto "github.com/duckhue01/golang_test/proto/v1"
+	proto "github.com/duckhue01/golang_test/proto/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
+
+const apiVer = "v2"
 
 // this test need to run todos service first
 var conn, _ = grpc.Dial("localhost:4040", grpc.WithInsecure())
@@ -30,36 +33,39 @@ func TestTodosServiceAdd(t *testing.T) {
 		{"test case #1",
 			args{context.Background(),
 				&proto.AddRequest{
-					Api: "v1",
+					Api: apiVer,
 					Todo: &proto.Todo{
-						Id:          1,
-						Title:       "asdasd",
-						Description: "asdasd",
+						Id: 4,
+						Title:       "Todo100",
+						Description: "sdfsdf",
 						CreateAt:    createAt,
 						UpdateAt:    createAt,
-						IsDone:      false,
+						Status:      proto.Status_DOING,
+						Tags:        []string{"Relax", "Weekly", "Love"},
 					},
 				}},
 			false,
 		},
-		{"test case #2", args{context.Background(), &proto.AddRequest{
-			Api: "v2",
-			Todo: &proto.Todo{
-				Id:          1,
-				Title:       "asdasd",
-				Description: "asdasd",
-				CreateAt:    createAt,
-				UpdateAt:    createAt,
-				IsDone:      false,
-			},
-		}},
-			true,
-		},
+		// {"test case #2", args{context.Background(), &proto.AddRequest{
+		// 	Api: "v1",
+		// 	Todo: &proto.Todo{
+		// 		Id:          1,
+		// 		Title:       "asdasd",
+		// 		Description: "asdasd",
+		// 		CreateAt:    createAt,
+		// 		UpdateAt:    createAt,
+		// 		Status:      proto.Todo_TODO,
+		// 		Tag: []string{"sao"},
+		// 	},
+		// }},
+		// 	true,
+		// },
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := client.Add(context.Background(), tt.args.req)
+			res, err := client.Add(context.Background(), tt.args.req)
+			fmt.Println(res)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("TodosService.Add() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -84,17 +90,16 @@ func TestTodosServiceGetOne(t *testing.T) {
 			"get todo exist in database",
 			args{context.Background(),
 				&proto.GetOneRequest{
-					Api: "v1",
-					Id:  2,
+					Api: apiVer,
+					Id:  1,
 				}},
-
 			false,
 		},
 		{
 			"get todo doesn't exist in database",
 			args{context.Background(),
 				&proto.GetOneRequest{
-					Api: "v1",
+					Api: apiVer,
 					Id:  10000,
 				}},
 
@@ -103,11 +108,12 @@ func TestTodosServiceGetOne(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := client.GetOne(tt.args.ctx, tt.args.req)
+			got, err := client.GetOne(tt.args.ctx, tt.args.req)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("TodosService.GetOne() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
+			fmt.Println(got)
 		})
 	}
 }
@@ -127,19 +133,22 @@ func TestTodosServiceGetAll(t *testing.T) {
 			"test case #1",
 			args{context.Background(),
 				&proto.GetAllRequest{
-					Api: "v1",
+					Api: apiVer,
+					// Pag: 3,
+					Status: []proto.Status{},
+					Tags:   []string{},
 				}},
-
 			false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := client.GetAll(tt.args.ctx, tt.args.req)
+			got, err := client.GetAll(tt.args.ctx, tt.args.req)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("TodosService.GetOne() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
+			fmt.Println(got)
 		})
 	}
 }
@@ -159,10 +168,19 @@ func TestTodosServiceDelete(t *testing.T) {
 			"delete record doesn't exist in database",
 			args{context.Background(),
 				&proto.DeleteRequest{
-					Api: "v1",
+					Api: apiVer,
 					Id:  10000,
 				}},
 			true,
+		},
+		{
+			"delete record  exist in database",
+			args{context.Background(),
+				&proto.DeleteRequest{
+					Api: apiVer,
+					Id:  1,
+				}},
+			false,
 		},
 	}
 	for _, tt := range tests {
@@ -192,14 +210,14 @@ func TestTodosServiceUpdate(t *testing.T) {
 			"updating record doesn't exist in database",
 			args{context.Background(),
 				&proto.UpdateRequest{
-					Api: "v1",
+					Api: apiVer,
 					Todo: &proto.Todo{
 						Id:          1000,
 						Title:       "asdasd",
 						Description: "asdasd",
 						CreateAt:    createAt,
 						UpdateAt:    createAt,
-						IsDone:      false,
+						Status:      proto.Status_TODO,
 					},
 				}},
 			true,
@@ -208,14 +226,14 @@ func TestTodosServiceUpdate(t *testing.T) {
 			"updating record exist in database",
 			args{context.Background(),
 				&proto.UpdateRequest{
-					Api: "v1",
+					Api: apiVer,
 					Todo: &proto.Todo{
 						Id:          3,
 						Title:       "duckhue01",
 						Description: "duckhue01",
 						CreateAt:    createAt,
 						UpdateAt:    createAt,
-						IsDone:      true,
+						Status:      proto.Status_TODO,
 					},
 				}},
 			false,
@@ -229,6 +247,60 @@ func TestTodosServiceUpdate(t *testing.T) {
 				t.Errorf("TodosService.Update() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
+		})
+	}
+}
+
+func TestTodosServiceReorder(t *testing.T) {
+
+	type args struct {
+		ctx context.Context
+		req *proto.ReorderRequest
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		// {
+		// 	"reorder record doesn't exist in database",
+		// 	args{context.Background(),
+		// 		&proto.ReorderRequest{
+		// 			Api: apiVer,
+		// 			Id:  102,
+		// 			Pos: 1,
+		// 		}},
+		// 	true,
+		// },
+		{
+			"reorder record  exist in database ",
+			args{context.Background(),
+				&proto.ReorderRequest{
+					Api: apiVer,
+					Id:  2,
+					Pos: 1,
+				}},
+			false,
+		},
+		// {
+		// 	"reorder record  exist in database",
+		// 	args{context.Background(),
+		// 		&proto.ReorderRequest{
+		// 			Api: apiVer,
+		// 			Id:  1,
+		// 			Pos: 3,
+		// 		}},
+		// 	false,
+		// },
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := client.Reorder(tt.args.ctx, tt.args.req)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("TodosService.Reorder() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
 		})
 	}
 }
